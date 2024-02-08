@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { AccountRole } from './accounts.entity';
 import { AuthSignInDto } from './dto/auth-signin.dto';
 import { JwtPayload } from './jwt-payload.interface';
+import {url} from "gravatar"
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,10 @@ export class AuthService {
         private accountsRepository: AccountsRepository,
         private jwtService: JwtService,
     ) { }
+
+    async test(email) {
+        return url(email)
+    }
 
     async signUp(authCredentialDto: AuthCredentialsDto, role: AccountRole): Promise<void> {
         return this.accountsRepository.createAccount(authCredentialDto, role);

@@ -1,9 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
 import { AccountRole } from './accounts.entity';
 import { AuthSignInDto } from './dto/auth-signin.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -12,6 +13,12 @@ export class AuthController {
     constructor(
         private authService: AuthService,
     ) { }
+
+    @UseGuards(AuthGuard())
+    @Get()
+    test(@Body() email) {
+        return this.authService.test(email);
+    }
     
     @ApiBody({ type: [AuthCredentialsDto] })
     @Post("/create-user")

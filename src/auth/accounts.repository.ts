@@ -3,6 +3,7 @@ import { DataSource, Repository } from "typeorm";
 import { AccountRole, Accounts } from "./accounts.entity";
 import { AuthCredentialsDto } from "./dto/auth-credentials.dto";
 import * as bcrypt from 'bcrypt';
+import {url} from "gravatar"
 
 @Injectable()
 export class AccountsRepository extends Repository<Accounts> {

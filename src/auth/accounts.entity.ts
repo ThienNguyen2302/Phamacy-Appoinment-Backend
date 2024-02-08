@@ -23,6 +23,9 @@ export class Accounts {
     @Column()
     password: string;
 
+    @Column({nullable: true})
+    avatar: string;
+
     @Column({
         type: "enum",
         enum: AccountRole,

@@ -13,15 +13,15 @@ export class Users {
     @BeforeInsert()
     getID() { this.id = this.account.id; }
 
-    @Column()
+    @Column({nullable: true})
     full_name: string;
 
-    @Column()
+    @Column({nullable: true})
     date_of_birth: string;
 
-    @Column()
+    @Column({nullable: true})
     address: string;
 
-    @Column()
+    @Column({nullable: true})
     gender: string;
 }
