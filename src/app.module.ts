@@ -7,6 +7,7 @@ import { DoctorsModule } from './doctors/doctors.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configValidationSchema } from './config.schema';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { configValidationSchema } from './config.schema';
     }),
     UsersModule, 
     AuthModule, 
-    DoctorsModule,
+    DoctorsModule, 
+    HealthModule,
     ],
   controllers: [AppController],
   providers: [AppService],

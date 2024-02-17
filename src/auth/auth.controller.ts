@@ -13,12 +13,6 @@ export class AuthController {
     constructor(
         private authService: AuthService,
     ) { }
-
-    @UseGuards(AuthGuard())
-    @Get()
-    test(@Body() email) {
-        return this.authService.test(email);
-    }
     
     @ApiBody({ type: [AuthCredentialsDto] })
     @Post("/create-user")

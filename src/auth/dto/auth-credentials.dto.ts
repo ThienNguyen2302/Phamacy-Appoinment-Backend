@@ -25,7 +25,4 @@ export class AuthCredentialsDto {
   @IsPhoneNumber('VN', { message: 'Invalid phone number from Vietnam' })
   @ApiProperty()
   contact_number: string;
-
-  @ApiProperty({type: () => Accounts})
-  account: Accounts
 }
