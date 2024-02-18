@@ -1,40 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { DoctorsModule } from './doctors/doctors.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { configValidationSchema } from './config.schema';
-import { HealthModule } from './health/health.module';
+import { ConfigModule } from '@nestjs/config';
+import { MyLogger } from './common/services/logger/logger.service';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/user/users.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      // envFilePath: [`.env.stage.${process.env.STAGE}`],
-      validationSchema: configValidationSchema,
-    }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        type: 'postgres',
-        autoLoadEntities: true,
-        synchronize: true,
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_DATABASE'),
-      }),
-    }),
-    UsersModule, 
-    AuthModule, 
-    DoctorsModule, 
-    HealthModule,
-    ],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [ConfigModule.forRoot(), UsersModule, AuthModule],
+  controllers: [],
+  providers: [{ provide: 'LoggerService', useClass: MyLogger }],
 })
-export class AppModule { }
+export class AppModule {}
