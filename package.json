@@ -9,7 +9,7 @@
     "prebuild": "rimraf dist && cpx \"./src/assets/**/*\" \"./dist/assets\"",
     "prestart": "rimraf dist && cpx \"./src/assets/**/*\" \"./dist/assets\"",
     "build": "nest build",
-    "start": "nest start --debug --watch",
+    "start": "nest start",
     "format": "pretty-quick",
     "lint": "eslint --max-warnings 0 \"{src,apps,libs,test}/**/*.ts\"",
     "lint-staged": "lint-staged"
