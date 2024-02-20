@@ -26,8 +26,6 @@ export class CreatePatientDto {
   email: string;
 
   @IsString()
-  image: string;
-
-  @IsString()
   address: string;
+  
 }

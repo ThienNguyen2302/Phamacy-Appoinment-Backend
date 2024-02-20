@@ -1,10 +1,9 @@
-import { PoolClient } from 'pg';
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from '../../common/services/postgres/postgres.service';
+import { PoolClient } from 'pg';
 import { MyLogger } from '../../common/services/logger/logger.service';
-import { CreatePatientDto } from '../../modules/patients/dto/create-patient.dto';
-import { patient } from '../../modules/patients/entities/patient.entity';
 import { ExecuteQueryResult, IActionTransaction } from '../../common/services/postgres/postgres.constant';
+import { PostgresService } from '../../common/services/postgres/postgres.service';
+import { patient } from '../../modules/patients/entities/patient.entity';
 import { User } from '../../modules/user/entities/user.entity';
 
 @Injectable()
@@ -14,7 +13,7 @@ export class PatientsRepository {
     private readonly logger: MyLogger,
   ) {}
 
-  async create(patient: CreatePatientDto): Promise<ExecuteQueryResult<patient>> {
+  async create(patient: patient): Promise<ExecuteQueryResult<patient>> {
     return this.postgresService.transaction(async (client: PoolClient, action: IActionTransaction) => {
       const sqlPathCreateUser = '/user/create_user.sql';
       await action.queryFile<User>(sqlPathCreateUser, [patient.username, patient.password, 'Patient'], client);

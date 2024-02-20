@@ -9,3 +9,17 @@ export enum ERoleUser {
   PATIENT = 'Patient',
   ADMIN = 'Admin',
 }
+
+export interface IUserBaseInfo {
+  username: string;
+  password?: string;
+  role: ERoleUser;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: string;
+  contactNumber: string;
+  email: string;
+  image: string;
+  address: string;
+}

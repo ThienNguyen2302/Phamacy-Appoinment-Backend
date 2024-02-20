@@ -1,8 +1,8 @@
-import { ROLES } from './../decorators/roles.decorator';
-import { RequestCustom } from './../modules/auth/auth.i';
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
+import { ROLES } from './../decorators/roles.decorator';
+import { RequestCustom } from './../modules/auth/auth.i';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -10,7 +10,7 @@ export class RolesGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const roles = this.reflector.getAllAndOverride<string[]>(ROLES, [context.getHandler(), context.getClass()]);
-    if (!roles) {
+    if (!roles?.length) {
       return true; // Nếu không có decorator @Roles, cho phép truy cập
     }
 

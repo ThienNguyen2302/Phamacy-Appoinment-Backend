@@ -1,9 +1,9 @@
-import { UserRepository } from './../../../repositories/user/user.repository.service';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { MyLogger } from '../../../common/services/logger/logger.service';
-import { User } from '../entities/user.entity';
-import { CreateUserDto } from '../dto/create-user.dto';
 import { genSaltSync, hashSync } from 'bcrypt';
+import { MyLogger } from '../../../common/services/logger/logger.service';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { IUserBaseInfo } from '../entities/user.entity';
+import { UserRepository } from './../../../repositories/user/user.repository.service';
 
 @Injectable()
 export class UsersService {
@@ -12,8 +12,8 @@ export class UsersService {
     private readonly logger: MyLogger,
   ) {}
 
-  async findOneWithUserName(username: string): Promise<User> {
-    const user = await this.userRepository.findUserWithUserName(username);
+  async findOneWithUserName(username: string): Promise<IUserBaseInfo> {
+    const user: IUserBaseInfo = await this.userRepository.findUserWithUserName(username);
     if (!user) {
       this.logger.error(`User ${username} not found`);
       throw new NotFoundException(`User ${username} not found`);

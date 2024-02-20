@@ -1,9 +1,9 @@
-import { ConfigService } from '@nestjs/config';
-import { UserRepository } from './../../repositories/user/user.repository.service';
 import { Injectable } from '@nestjs/common';
-import { compareSync } from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../user/entities/user.entity';
+import { compareSync } from 'bcrypt';
+import { IUserBaseInfo } from '../user/entities/user.entity';
+import { UserRepository } from './../../repositories/user/user.repository.service';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +14,7 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string) {
-    const user = await this.userRepository.findUserWithUserName(username);
+    const user: IUserBaseInfo = await this.userRepository.findUserWithUserName(username);
     if (user && compareSync(password, user.password)) {
       delete user.password;
       return user;
@@ -22,8 +22,8 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User) {
-    const payload = user;
+  async login(user: IUserBaseInfo) {
+  const payload = user;
     return {
       accessToken: this.jwtService.sign(payload),
       refreshToken: this.createRefreshToken(payload),

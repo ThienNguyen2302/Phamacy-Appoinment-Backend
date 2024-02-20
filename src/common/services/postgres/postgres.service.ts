@@ -2,7 +2,7 @@
 import { BadRequestException, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
-import * as _path from 'path';
+import * as path from 'path';
 import { Pool, PoolClient, PoolConfig, QueryResult } from 'pg';
 import { MyLogger } from '../logger/logger.service';
 import { ExecuteQueryResult, IActionTransaction } from './postgres.constant';
@@ -14,20 +14,21 @@ export const externals = {
 @Injectable()
 export class PostgresService implements OnModuleDestroy {
   private readonly pool: Pool;
-  private readonly path = { ..._path };
-  private readonly queryFilePath: string = this.path.join(__dirname, `../../../assets/sql`);
+  private readonly queryFilePath: string;
 
   constructor(
     private readonly logger: MyLogger,
     private configService: ConfigService,
   ) {
+    this.queryFilePath = path.join(__dirname, `../../../assets/sql`);
     const databaseConfigDefault: PoolConfig = {
-      user: 'admin',
-      password: 'PrnGm730n1O9iwHqNM4cbBXiBX9dprvo',
-      host: 'dpg-cn9mvi779t8c73bcql50-a.singapore-postgres.render.com',
-      database: 'phamacy_app',
-      port: 5432,
+      user: this.configService.get<string>('DB_USER'),
+      password: this.configService.get<string>('DB_PASSWORD'),
+      host: this.configService.get<string>('DB_HOST'),
+      database: this.configService.get<string>('DB_NAME'),
+      port: this.configService.get<number>('DB_PORT'),
       keepAlive: true,
+      ssl: { rejectUnauthorized: false },
     };
 
     this.pool = new Pool({
@@ -63,7 +64,8 @@ export class PostgresService implements OnModuleDestroy {
   ): Promise<ExecuteQueryResult<T>> {
     try {
       // Đọc nội dung của tệp
-      const currentPath = `${this.queryFilePath}${filePath}`;
+      const basePath = path.join(__dirname, `../../../assets/sql`);
+      const currentPath = `${basePath}${filePath}`;
       const query = fs.readFileSync(currentPath, 'utf-8');
       if (!query) {
         throw new BadRequestException(`Can't read contents file sql`);
@@ -110,6 +112,7 @@ export class PostgresService implements OnModuleDestroy {
       throw new BadRequestException(`Transaction failed: ${error.message}`);
     } finally {
       client.release();
+      this.closePool();
     }
   }
 
