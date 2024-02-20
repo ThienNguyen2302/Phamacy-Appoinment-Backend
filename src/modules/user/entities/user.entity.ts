@@ -1,10 +1,11 @@
 export interface User {
   username: string;
-  password?: string;
-  fullName: string;
-  email: string;
-  phoneNumber: string;
-  address: string;
-  roles: string[];
-  createdAt: string;
+  password: string;
+  role: ERoleUser;
+}
+
+export enum ERoleUser {
+  DOCTOR = 'Doctor',
+  PATIENT = 'Patient',
+  ADMIN = 'Admin',
 }

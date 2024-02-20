@@ -1,11 +1,11 @@
 // postgres.service.ts
 import { BadRequestException, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { Pool, PoolClient, PoolConfig, QueryResult } from 'pg';
-import databaseConfig from '../../../config/database.config';
+import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as _path from 'path';
+import { Pool, PoolClient, PoolConfig, QueryResult } from 'pg';
 import { MyLogger } from '../logger/logger.service';
-import { ExecuteQueryResult } from './postgres.constant';
+import { ExecuteQueryResult, IActionTransaction } from './postgres.constant';
 
 export const externals = {
   readFileSync: fs.readFileSync,
@@ -17,17 +17,21 @@ export class PostgresService implements OnModuleDestroy {
   private readonly path = { ..._path };
   private readonly queryFilePath: string = this.path.join(__dirname, `../../../assets/sql`);
 
-  constructor(private readonly logger: MyLogger) {
+  constructor(
+    private readonly logger: MyLogger,
+    private configService: ConfigService,
+  ) {
     const databaseConfigDefault: PoolConfig = {
-      user: 'default_user',
-      host: 'localhost',
-      database: 'default_database',
-      password: 'default_password',
+      user: 'admin',
+      password: 'PrnGm730n1O9iwHqNM4cbBXiBX9dprvo',
+      host: 'dpg-cn9mvi779t8c73bcql50-a.singapore-postgres.render.com',
+      database: 'phamacy_app',
       port: 5432,
+      keepAlive: true,
     };
+
     this.pool = new Pool({
       ...databaseConfigDefault,
-      ...databaseConfig,
     });
   }
 
@@ -93,11 +97,11 @@ export class PostgresService implements OnModuleDestroy {
     }
   }
 
-  async transaction(callback: (client: PoolClient) => Promise<any>): Promise<any> {
+  async transaction(callback: (client: PoolClient, action: IActionTransaction) => Promise<any>): Promise<any> {
     const client = await this.pool.connect();
     try {
       await client.query('BEGIN');
-      const result = await callback(client);
+      const result = await callback(client, { queryFile: this.transactionQueryFile, query: this.query });
       await client.query('COMMIT');
       return result;
     } catch (error) {

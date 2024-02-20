@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from '../../common/services/postgres/postgres.service';
 import { MyLogger } from '../../common/services/logger/logger.service';
+import { ExecuteQueryResult } from '../../common/services/postgres/postgres.constant';
+import { PostgresService } from '../../common/services/postgres/postgres.service';
+import { CreateUserDto } from '../../modules/user/dto/create-user.dto';
 import { User } from '../../modules/user/entities/user.entity';
-import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
-import { ExecuteQueryResult } from 'src/common/services/postgres/postgres.constant';
 
 @Injectable()
 export class UserRepository {
@@ -17,10 +17,7 @@ export class UserRepository {
     const result = await this.postgresService.executeQueryFromFile<User>(queryPath, [
       user.username,
       user.password,
-      user.fullName,
-      user.email,
-      user.phoneNumber,
-      user.address,
+      user.role,
     ]);
     return result;
   }
