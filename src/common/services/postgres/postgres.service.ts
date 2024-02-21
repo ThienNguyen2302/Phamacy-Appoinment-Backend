@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Pool, PoolClient, PoolConfig, QueryResult } from 'pg';
 import { MyLogger } from '../logger/logger.service';
-import { ExecuteQueryResult, IActionTransaction } from './postgres.constant';
+import { ExecuteQueryResult } from './postgres.constant';
 
 export const externals = {
   readFileSync: fs.readFileSync,
@@ -43,18 +43,59 @@ export class PostgresService implements OnModuleDestroy {
       return result;
     } catch (error) {
       this.logger.error(error.message);
-      throw new BadRequestException('Query failed');
+      throw new BadRequestException(`SQL Execute Failed: ${error.message}`);
+    } finally {
+      client.release();
+    }
+  }
+
+  async executeQueryFromFile<T>(filePath: string, params: any[] = []): Promise<ExecuteQueryResult<T>> {
+    const client = (await this.pool.connect()) as PoolClient;
+    try {
+      // Đọc nội dung của tệp
+      const currentPath = `${this.queryFilePath}${filePath}`;
+      const query = fs.readFileSync(currentPath, 'utf-8');
+      if (!query) {
+        throw new BadRequestException(`Can't read contents file sql`);
+      }
+
+      // Gọi hàm executeQuery với nội dung của tệp và các tham số
+      return await this.query<T>(query, params, client);
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new BadRequestException(`SQL Execute Failed: ${error.message}`);
+    } finally {
+      client.release();
+    }
+  }
+
+  async transaction(callback: (client: PoolClient) => Promise<any>): Promise<any> {
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const result = await callback(client);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      this.logger.error(error.message);
+      throw new BadRequestException(`Transaction Failed: ${error.message}`);
     } finally {
       client.release();
     }
   }
 
   async query<T>(query: string, params: any[] = [], client: PoolClient): Promise<ExecuteQueryResult<T>> {
-    const responeQuery: QueryResult<T> = await client.query<T>(query, params);
-    return {
-      rowCount: responeQuery.rowCount,
-      rows: responeQuery.rows,
-    };
+    try {
+      const responeQuery: QueryResult<T> = await client.query<T>(query, params);
+      return {
+        rowCount: responeQuery.rowCount,
+        rows: responeQuery.rows,
+      };
+    } catch (error) {
+      this.logger.error(error.message);
+      throw new BadRequestException(`SQL Execute Failed: ${error.message}`);
+    }
   }
 
   async transactionQueryFile<T>(
@@ -75,44 +116,7 @@ export class PostgresService implements OnModuleDestroy {
       return await this.query<T>(query, params, client);
     } catch (error) {
       this.logger.error(error.message);
-      throw new BadRequestException('Query by file failed');
-    }
-  }
-
-  async executeQueryFromFile<T>(filePath: string, params: any[] = []): Promise<ExecuteQueryResult<T>> {
-    const client = (await this.pool.connect()) as PoolClient;
-    try {
-      // Đọc nội dung của tệp
-      const currentPath = `${this.queryFilePath}${filePath}`;
-      const query = fs.readFileSync(currentPath, 'utf-8');
-      if (!query) {
-        throw new BadRequestException(`Can't read contents file sql`);
-      }
-
-      // Gọi hàm executeQuery với nội dung của tệp và các tham số
-      return await this.query<T>(query, params, client);
-    } catch (error) {
-      this.logger.error(error.message);
-      throw new BadRequestException(`Query by file failed - ${error.message}`);
-    } finally {
-      client.release();
-    }
-  }
-
-  async transaction(callback: (client: PoolClient, action: IActionTransaction) => Promise<any>): Promise<any> {
-    const client = await this.pool.connect();
-    try {
-      await client.query('BEGIN');
-      const result = await callback(client, { queryFile: this.transactionQueryFile, query: this.query });
-      await client.query('COMMIT');
-      return result;
-    } catch (error) {
-      await client.query('ROLLBACK');
-      this.logger.error(error.message);
-      throw new BadRequestException(`Transaction failed: ${error.message}`);
-    } finally {
-      client.release();
-      this.closePool();
+      throw new BadRequestException(`SQL Execute Failed: ${error.message}`);
     }
   }
 
