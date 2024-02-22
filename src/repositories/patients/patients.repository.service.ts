@@ -3,7 +3,7 @@ import { PoolClient } from 'pg';
 import { MyLogger } from '../../common/services/logger/logger.service';
 import { ExecuteQueryResult } from '../../common/services/postgres/postgres.constant';
 import { PostgresService } from '../../common/services/postgres/postgres.service';
-import { patient } from '../../modules/patients/entities/patient.entity';
+import { patient, patientInfo, patientUpdate } from '../../modules/patients/entities/patient.entity';
 import { User } from '../../modules/user/entities/user.entity';
 
 @Injectable()
@@ -39,5 +39,31 @@ export class PatientsRepository {
         client,
       );
     });
+  }
+
+  async update(patient: patientUpdate): Promise<ExecuteQueryResult<patientUpdate>> {
+    const sqlPathCreatePatient = '/patients/update_patient.sql';
+    return await this.postgresService.executeQueryFromFile<patientUpdate>(sqlPathCreatePatient, [
+      patient.username,
+      patient.firstName,
+      patient.lastName,
+      patient.dateOfBirth,
+      patient.gender,
+      patient.contactNumber,
+      patient.email,
+      patient.image,
+      patient.address,
+    ]);
+  }
+
+  async find(username: string): Promise<patientInfo | null> {
+    const sqlPath = '/patients/get_patient.sql';
+    const result = await this.postgresService.executeQueryFromFile<patientInfo>(sqlPath, [username]);
+    return result?.rows?.length > 0 ? result?.rows[0] : null;
+  }
+
+  async findAll(): Promise<patientInfo[]> {
+    const sqlPath = '/patients/get_patients.sql';
+    return (await this.postgresService.executeQueryFromFile<patientInfo>(sqlPath, [])).rows || [];
   }
 }

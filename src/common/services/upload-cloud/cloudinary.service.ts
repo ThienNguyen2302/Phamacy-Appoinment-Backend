@@ -29,7 +29,7 @@ export class CloudinaryService {
     });
   }
 
-  async removeImageFromCloudinary(publicId: string) {
+  async removeImageFromCloudinary(publicId: string): Promise<any> {
     try {
       const result = await cloudinary.uploader.destroy(publicId);
       return result;

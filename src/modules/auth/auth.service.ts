@@ -23,7 +23,7 @@ export class AuthService {
   }
 
   async login(user: IUserBaseInfo) {
-  const payload = user;
+    const payload = user;
     return {
       accessToken: this.jwtService.sign(payload),
       refreshToken: this.createRefreshToken(payload),
