@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './service/users.service';
-import { UsersController } from './controller/users.controller';
 import { MyLoggerModule } from '../../common/services/logger/logger.module';
 import { UserRepositoryModule } from '../../repositories/user/user.repository.module';
+import { UsersController } from './controller/users.controller';
+import { UsersService } from './service/users.service';
 
 @Module({
   imports: [MyLoggerModule, UserRepositoryModule],

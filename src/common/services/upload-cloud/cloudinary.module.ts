@@ -1,8 +1,7 @@
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { MyLoggerModule } from "../logger/logger.module";
-import { CloudinaryService } from "./cloudinary.service";
-
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { MyLoggerModule } from '../logger/logger.module';
+import { CloudinaryService } from './cloudinary.service';
 
 @Module({
   imports: [MyLoggerModule, ConfigModule],
