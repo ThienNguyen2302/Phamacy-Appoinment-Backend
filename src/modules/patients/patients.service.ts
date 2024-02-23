@@ -5,8 +5,8 @@ import { CloudinaryService } from '../../common/services/upload-cloud/cloudinary
 import { PatientsRepository } from '../../repositories/patients/patients.repository.service';
 import { UserRepository } from '../../repositories/user/user.repository.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
-import { patient, patientInfo, patientUpdate } from './entities/patient.entity';
 import { UpdatePatientDto } from './dto/update-patient.dto';
+import { patient, patientInfo, patientUpdate } from './entities/patient.entity';
 
 @Injectable()
 export class PatientsService {
@@ -45,7 +45,12 @@ export class PatientsService {
   async update(updatePatientDto: UpdatePatientDto, image: Express.Multer.File) {
     // upload avatar
     try {
-      const parts = updatePatientDto.imageUrl.split('/');
+      const oldPatient = await this.patientsRepository.find(updatePatientDto.username);
+      if (!oldPatient) {
+        throw new NotFoundException(`Patient ${updatePatientDto.username} not exits!`);
+      }
+
+      const parts = oldPatient.image.split('/');
       const lastPart = parts[parts.length - 1];
       const publicIdOld = `user/${lastPart.split('.')[0]}`;
 
