@@ -16,17 +16,21 @@ export class PatientsController {
   create(@UploadedFile() image: Express.Multer.File, @Body() body: CreatePatientDto) {
     return this.patientsService.create(body, image);
   }
+
+  @RolesAndGuard(['Patient', 'admin'])
   @UseInterceptors(FileInterceptor('image'))
   @Patch()
   update(@UploadedFile() image: Express.Multer.File, @Body() body: UpdatePatientDto) {
     return this.patientsService.update(body, image);
   }
 
+  @RolesAndGuard(['Patient', 'admin'])
   @Get(':username')
   find(@Param('username') username: string) {
     return this.patientsService.find(username);
   }
-  @RolesAndGuard(['admin'])
+
+  @RolesAndGuard(['Patient', 'admin'])
   @Get()
   findAll() {
     return this.patientsService.findAll();
