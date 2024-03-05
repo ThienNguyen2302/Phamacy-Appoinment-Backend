@@ -6,9 +6,10 @@ import { DepartmentsModule } from './modules/departments/departments.module';
 import { DoctorModule } from './modules/doctor/doctor.module';
 import { PatientsModule } from './modules/patients/patients.module';
 import { UsersModule } from './modules/user/users.module';
+import { AppointmentsModule } from './modules/appointments/appointments.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UsersModule, AuthModule, PatientsModule, DoctorModule, DepartmentsModule],
+  imports: [ConfigModule.forRoot(), UsersModule, AuthModule, PatientsModule, DoctorModule, DepartmentsModule, AppointmentsModule],
   controllers: [],
   providers: [{ provide: 'LoggerService', useClass: MyLogger }],
 })
