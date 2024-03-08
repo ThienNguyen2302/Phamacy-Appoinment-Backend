@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from '../../common/services/postgres/postgres.service';
 import { MyLogger } from '../../common/services/logger/logger.service';
+import { ExecuteQueryResult } from '../../common/services/postgres/postgres.constant';
+import { PostgresService } from '../../common/services/postgres/postgres.service';
 import {
   IAppointmentsCreate,
   IAppointmentsInfo,
   IAppointmentsUpdate,
+  IChangeStatusAppointment,
   IQueryParamsFindAll,
   IScheduleAppointmentDoctor,
 } from '../../modules/appointments/entities/appointment.entity';
-import { ExecuteQueryResult } from '../../common/services/postgres/postgres.constant';
 
 @Injectable()
 export class AppointmentsRepository {
@@ -95,5 +96,10 @@ export class AppointmentsRepository {
     const sqlPath = '/appointments/get_appointment.sql';
     const result = await this.postgresService.executeQueryFromFile<IAppointmentsInfo>(sqlPath, [id]);
     return result.rows.length > 0 ? result.rows[0] : null;
+  }
+
+  async changeStatus(params: IChangeStatusAppointment) {
+    const sqlPath = '/appointments/change_status_appointment.sql';
+    return await this.postgresService.executeQueryFromFile<null>(sqlPath, [params.id, params.status]);
   }
 }

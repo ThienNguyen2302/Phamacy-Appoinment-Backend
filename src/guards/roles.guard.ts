@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
+import { ERoleUser } from '../modules/user/entities/user.entity';
 import { ROLES } from './../decorators/roles.decorator';
 import { RequestCustom } from './../modules/auth/auth.i';
 
@@ -16,6 +17,8 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest() as RequestCustom;
     const user = request.user;
+    if (user.role === ERoleUser.ADMIN) return true;
+
     return roles.includes(user.role);
   }
 }

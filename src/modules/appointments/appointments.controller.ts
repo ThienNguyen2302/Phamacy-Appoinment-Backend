@@ -1,9 +1,12 @@
 import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { RolesAndGuard } from '../../decorators/roleAndGuard.decorator';
+import { ERoleUser } from '../user/entities/user.entity';
 import { AppointmentsService } from './appointments.service';
+import { ChangeStatusAppointmentDto } from './dto/change-status-appointment.dto';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { QueryAppointmentsDto } from './dto/query-appointments.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { IQueryParamsFindAll } from './entities/appointment.entity';
-import { QueryAppointmentsDto } from './dto/query-appointments.dto';
 
 @Controller('appointments')
 export class AppointmentsController {
@@ -31,5 +34,11 @@ export class AppointmentsController {
   @Patch()
   update(@Body() updateAppointmentDto: UpdateAppointmentDto) {
     return this.appointmentsService.update(updateAppointmentDto);
+  }
+
+  @RolesAndGuard([ERoleUser.DOCTOR])
+  @Patch('/change-status')
+  changeStatus(@Body() params: ChangeStatusAppointmentDto) {
+    return this.appointmentsService.changeStatus(params);
   }
 }

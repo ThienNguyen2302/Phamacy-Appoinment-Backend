@@ -8,6 +8,7 @@ import {
   IAppointmentsCreate,
   IAppointmentsInfo,
   IAppointmentsUpdate,
+  IChangeStatusAppointment,
   IQueryParamsFindAll,
   IScheduleAppointmentDoctor,
 } from './entities/appointment.entity';
@@ -84,5 +85,14 @@ export class AppointmentsService {
   async findOne(id: number) {
     const scheduleDoctor: IAppointmentsInfo | null = await this.appointmentsRepository.getAppointment(id);
     return scheduleDoctor;
+  }
+
+  async changeStatus(params: IChangeStatusAppointment) {
+    try {
+      return this.appointmentsRepository.changeStatus(params);
+    } catch (error) {
+      this.logger.error(`Update status appointment failed`);
+      throw error;
+    }
   }
 }

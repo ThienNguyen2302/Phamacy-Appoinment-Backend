@@ -57,3 +57,8 @@ export interface IQueryParamsFindAll {
   doctorId?: number;
   patientId?: number;
 }
+
+export interface IChangeStatusAppointment {
+  id: number;
+  status: EAppointmentStatus;
+}

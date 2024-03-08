@@ -23,3 +23,9 @@ export interface IUserBaseInfo {
   image: string;
   address: string;
 }
+
+export interface IUserBase {
+  username: string;
+  password?: string;
+  role: ERoleUser;
+}

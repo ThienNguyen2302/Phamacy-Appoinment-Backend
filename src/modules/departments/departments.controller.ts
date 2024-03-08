@@ -1,10 +1,11 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { RolesAndGuard } from '../../decorators/roleAndGuard.decorator';
+import { ERoleUser } from '../user/entities/user.entity';
 import { DepartmentsService } from './departments.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
-import { RolesAndGuard } from '../../decorators/roleAndGuard.decorator';
 
-@RolesAndGuard(['admin'])
+@RolesAndGuard([ERoleUser.ADMIN])
 @Controller('departments')
 export class DepartmentsController {
   constructor(private readonly departmentsService: DepartmentsService) {}
