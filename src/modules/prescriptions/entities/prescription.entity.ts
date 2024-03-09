@@ -1,3 +1,17 @@
+export interface IPrescriptionDetail {
+  prescriptionId: number;
+  appointment: {
+    doctor: string;
+    patient: string;
+    purpose: string;
+  };
+  notes: string;
+  prescriptionDetails: {
+    prescriptionType: string;
+    details: IDetails[];
+  }[];
+}
+
 export interface IPrescriptionCreate {
   appointmentId: number;
   notes?: string;
